@@ -1,0 +1,16 @@
+Options -Indexes
+
+# Сначала разрешаем доступ к изображениям
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Require all granted
+</FilesMatch>
+
+# Для всего остального запрещаем
+<FilesMatch "\.(?!jpg|jpeg|png|gif|webp$)[^\.]+$">
+    Require all denied
+</FilesMatch>
+
+# Запрещаем доступ к .htaccess
+<Files ".htaccess">
+    Require all denied
+</Files>

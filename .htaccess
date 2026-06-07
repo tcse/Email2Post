@@ -1,0 +1,88 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+# === 1. Блог: красивые URL ===
+RewriteRule ^$ index.php [L,QSA]
+RewriteRule ^post/([a-zA-Z0-9_]+)$ index.php?p=post/$1 [L,QSA]
+RewriteRule ^page/(\d+)$ index.php?p=page/$1 [L,QSA]
+RewriteRule ^tag/([^/]+)$ index.php?p=tag/$1 [L,QSA]
+
+# === 2. Роутинг плеера ===
+RewriteRule ^player$ index.php?p=player [L,QSA]
+
+# === 3. Плейлисты ===
+RewriteRule ^playlist\.m3u$ core/generate_playlist.php?format=m3u [L,QSA]
+RewriteRule ^playlist\.pls$ core/generate_playlist.php?format=pls [L,QSA]
+RewriteRule ^playlist\.xspf$ core/generate_playlist.php?format=xspf [L,QSA]
+
+# === 4. Фиды ===
+RewriteRule ^sitemap\.xml$ core/generate_sitemap.php [L,QSA]
+RewriteRule ^rss_blog\.xml$ core/generate_rss.php [L,QSA]
+RewriteRule ^rss_podcast\.xml$ core/generate_rss_audio.php [L,QSA]
+
+# === 5. Статика: если файл существует — отдать напрямую ===
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# === 6. Запрет доступа к приватным файлам ===
+<FilesMatch "\.(json|log|sqlite)$">
+    Require all denied
+</FilesMatch>
+
+# === 7. Разрешаем доступ к core/*.php для конкретных скриптов ===
+<Files "core/blog_cover.php">
+    Require all granted
+</Files>
+<Files "core/stream.php">
+    Require all granted
+</Files>
+<Files "core/cover.php">
+    Require all granted
+</Files>
+<Files "core/proxy.php">
+    Require all granted
+</Files>
+<Files "core/generate_playlist.php">
+    Require all granted
+</Files>
+<Files "core/generate_rss.php">
+    Require all granted
+</Files>
+<Files "core/update_play.php">
+    Require all granted
+</Files>
+
+# === 8. Все остальные core-файлы запрещены ===
+<FilesMatch "^core/(?!blog_cover\.php|stream\.php|cover\.php|proxy\.php|generate_playlist\.php|generate_rss\.php|update_play\.php).*\.php$">
+    Require all denied
+</FilesMatch>
+
+# === 9. Запрет прямого доступа к lang и templates ===
+RedirectMatch 403 ^/plugins/tcse/email2post/lang/.*$
+RedirectMatch 403 ^/plugins/tcse/email2post/templates/.*$
+
+# === 10. Разрешаем доступ к изображениям в data/uploads ===
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} ^/plugins/tcse/email2post/data/uploads/.*\.(jpg|jpeg|png|gif|webp)$
+    RewriteRule ^ - [L]
+</IfModule>
+
+# === 11. Запрещаем доступ к остальному в data ===
+RedirectMatch 403 ^/plugins/tcse/email2post/data/(?!uploads/).*$
+
+# === 12. Разрешаем публичные ассеты ===
+<FilesMatch "\.(css|js|png|jpg|gif|svg|woff2?|ttf|eot|ico)$">
+    Require all granted
+</FilesMatch>
+
+<Files "index.php">
+    Require all granted
+</Files>
+<Files "index.html">
+    Require all granted
+</Files>
+<Files "player.html">
+    Require all granted
+</Files>

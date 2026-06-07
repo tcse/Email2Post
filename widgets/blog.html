@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог артиста | TMH by TCSE</title>
+    <link rel="alternate" type="application/rss+xml" title="TMH блог by TCSE" href="../core/generate_rss.php">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Swiper.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <!-- Иконки -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://api.tcse-cms.com/plugins/tcse/tmh2.0/assets/favicons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="https://api.tcse-cms.com/plugins/tcse/tmh2.0/assets/favicons/favicon.svg" />
+    <link rel="shortcut icon" href="https://api.tcse-cms.com/plugins/tcse/tmh2.0/assets/favicons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://api.tcse-cms.com/plugins/tcse/tmh2.0/assets/favicons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="TMH by TCSE" />
+    <link rel="manifest" href="https://api.tcse-cms.com/plugins/tcse/tmh2.0/assets/favicons/site.webmanifest" />
+
+    <style>
+        :root {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border: #333;
+            --accent: #1DB954;
+        }
+
+        [data-theme="light"] {
+            --bg: #f8f9fa;
+            --text: #212529;
+            --card-bg: #fff;
+            --border: #dee2e6;
+            --accent: #198754;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-top: 70px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header {
+            background-color: #121212;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1DB954;
+        }
+
+        .logo i {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: auto;
+            background-color: #121212;
+            color: #888;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .post-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+        }
+
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-img {
+            width: 100%;
+            height: 20rem;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-excerpt {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .btn-read-more {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .back-link {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .pagination-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .single-post img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .swiper {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: grab;
+        }
+
+        .swiper-slide img:active {
+            cursor: grabbing;
+        }
+
+        .gallery-title {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand logo" href="./index.html">
+                    <i class="bi bi-music-note-beamed"></i> TMH by TCSE
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://t.me/streetepic" target="_blank">
+                                <i class="bi bi-telegram"></i> Канал
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="player.html" target="_blank">
+                                <i class="bi bi-play-circle"></i> Плеер
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <button class="theme-toggle nav-link" id="themeToggle">
+                                <i class="bi bi-moon-stars"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Контент -->
+    <main class="flex-grow-1">
+        <div class="container">
+
+            <!-- Список постов -->
+            <div id="posts-list" class="posts-list">
+                <h2 class="mb-4">Последние записи</h2>
+                <div id="posts-container"></div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Отдельный пост -->
+            <div id="single-post" class="single-post text-decoration-none" style="display: none;">
+                <a href="./blog.html" class="back-link text-decoration-none">&larr; Назад к списку</a>
+                <h1 id="single-post-title"></h1>
+                <small id="single-post-date" class="d-block mb-2"></small>
+                <div id="single-post-content"></div>
+                <div id="single-post-gallery"></div>
+                <img id="single-post-image" src="" alt="Обложка" style="display: none;">
+                <p>
+                    <a id="single-post-link" href="" target="_blank" class="btn btn-outline-success btn-sm mt-3">
+                        Перейти к оригиналу в Telegram
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Chuyakov Project. Все права защищены.</p>
+            <p>Сайт работает на <a href="https://github.com/tcse/php-TMH" class="text-decoration-none" target="_blank">TMH by TCSE</a></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        // === Тема ===
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('blog-theme') || 'dark';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        function setTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('blog-theme', theme);
+            themeIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+        }
+
+        // === Пагинация ===
+        const postsPerPage = 10;
+        let currentPage = 1;
+        let allPosts = [];
+
+        // === Загрузка постов ===
+        fetch('../core/channel_proxy.php')
+            .then(r => r.json())
+            .then(data => {
+                allPosts = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderPosts();
+            })
+            .catch(err => {
+                document.getElementById('posts-container').innerHTML = '<p class="text-danger">❌ Ошибка загрузки блога.</p>';
+                console.error('Ошибка:', err);
+            });
+
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            const pagination = document.getElementById('pagination');
+            container.innerHTML = '';
+            pagination.innerHTML = '';
+
+            const start = (currentPage - 1) * postsPerPage;
+            const end = start + postsPerPage;
+            const pagePosts = allPosts.slice(start, end);
+
+            if (pagePosts.length === 0 && currentPage === 1) {
+                container.innerHTML = '<p>Пока нет записей.</p>';
+                return;
+            }
+
+            pagePosts.forEach(post => {
+                const title = getPostTitle(post);
+                const textPreview = (post.text || '') + (post.caption ? '\n\n' + post.caption : '');
+                const excerpt = textPreview.length > 200 
+                    ? textPreview.substring(0, 200) + '...' 
+                    : textPreview;
+
+                const card = document.createElement('div');
+                card.className = 'post-card';
+
+                let photoHtml = '';
+                // ✅ Показываем первую картинку из галереи в карточке
+                if (post.photo_file_id) {
+                    const proxy = `../core/blog_cover.php?file_id=${encodeURIComponent(post.photo_file_id)}`;
+                    photoHtml = `<img src="${proxy}" class="post-img" alt="Изображение">`;
+                } else if (post.photos && post.photos.length > 0) {
+                    const firstFileId = post.photos[0].file_id;
+                    const proxy = `../core/blog_cover.php?file_id=${encodeURIComponent(firstFileId)}`;
+                    photoHtml = `<img src="${proxy}" class="post-img" alt="Изображение">`;
+                }
+
+                card.innerHTML = `
+                    ${photoHtml}
+                    <div class="p-3">
+                        <h3>${title}</h3>
+                        <small class="post-date">📅 ${post.date}</small>
+                        <div class="post-excerpt">${excerpt.replace(/\n/g, '<br>')}</div>
+                        <button class="btn btn-sm btn-outline-secondary btn-read-more" data-id="${post.id}">
+                            Подробнее
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                card.querySelector('.btn-read-more').addEventListener('click', () => {
+                    window.location.hash = `post=${post.id}`;
+                    loadPost(post.id);
+                });
+            });
+
+            // Пагинация
+            const totalPages = Math.ceil(allPosts.length / postsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = 'pagination-btn' + (i === currentPage ? ' active' : '');
+                btn.disabled = i === currentPage;
+                btn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderPosts();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(btn);
+            }
+        }
+
+        // === Получить заголовок ===
+        function getPostTitle(post) {
+            const text = post.text || '';
+            const caption = post.caption || '';
+            const source = text.trim() ? text : caption;
+            return source.split('\n')[0].trim() || 'Новый пост';
+        }
+
+        // === Загрузить один пост ===
+        function loadPost(postId) {
+            const post = allPosts.find(p => p.id == postId);
+            if (!post) return;
+
+            const postsList = document.getElementById('posts-list');
+            const singlePost = document.getElementById('single-post');
+
+            postsList.style.display = 'none';
+            singlePost.style.display = 'block';
+
+            document.getElementById('single-post-title').textContent = getPostTitle(post);
+            document.getElementById('single-post-date').textContent = `📅 ${post.date}`;
+
+            const contentEl = document.getElementById('single-post-content');
+            const fullText = (post.text || '') + (post.caption ? '\n\n' + post.caption : '');
+            contentEl.innerHTML = makeLinksClickable(
+                fullText
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '<')
+                    .replace(/>/g, '>')
+                    .replace(/\n/g, '<br>')
+            );
+
+            // === Аудио ===
+            if (post.audio) {
+                const audioEl = document.createElement('audio');
+                audioEl.controls = true;
+                audioEl.style.width = '100%';
+                audioEl.style.margin = '1rem 0';
+                audioEl.src = `../core/stream.php?id=${post.audio.file_id}`;
+                audioEl.addEventListener('play', () => {
+                    fetch('../core/update_play.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ file_id: post.audio.file_id })
+                    });
+                });
+                contentEl.appendChild(audioEl);
+            }
+
+            // === Галерея (альбом) ===
+            const galleryEl = document.getElementById('single-post-gallery');
+            galleryEl.innerHTML = '';
+
+            if (post.photos && post.photos.length > 0) {
+                const galleryTitle = document.createElement('div');
+                galleryTitle.className = 'gallery-title';
+                galleryTitle.textContent = `Фотогалерея (${post.photos.length} фото)`;
+                galleryEl.appendChild(galleryTitle);
+
+                const swiperContainer = document.createElement('div');
+                swiperContainer.className = 'swiper';
+                swiperContainer.innerHTML = `
+                    <div class="swiper-wrapper"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                `;
+                galleryEl.appendChild(swiperContainer);
+
+                const wrapper = swiperContainer.querySelector('.swiper-wrapper');
+                post.photos.forEach(photo => {
+                    const file_id = photo.file_id;
+                    const proxyUrl = `../core/blog_cover.php?file_id=${encodeURIComponent(file_id)}`;
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `<img src="${proxyUrl}" alt="Фото">`;
+                    // ❌ Клик по слайду отключён
+                    slide.style.cursor = 'default';
+                    wrapper.appendChild(slide);
+                });
+
+                // ✅ Инициализация Swiper с настройками
+                new Swiper(swiperContainer, {
+                    loop: false,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    slidesPerView: 1,
+                    spaceBetween: 10,
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    },
+                    breakpoints: {
+                        640: { slidesPerView: 1.2 },
+                        768: { slidesPerView: 1.5 },
+                        1024: { slidesPerView: 2 }
+                    }
+                });
+            }
+
+            // === Одиночное фото ===
+            const imgEl = document.getElementById('single-post-image');
+            if (post.photo_file_id && !post.photos) {
+                const proxy = `../core/blog_cover.php?file_id=${encodeURIComponent(post.photo_file_id)}`;
+                imgEl.src = proxy;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            // === Ссылка на оригинал ===
+            const linkEl = document.getElementById('single-post-link');
+            const channelUsername = tmhConfig?.meta?.channel_username || 'chuyakov_project';
+            linkEl.href = `https://t.me/${channelUsername}/${postId}`;
+        }
+
+        // === Делаем ссылки кликабельными ===
+        function makeLinksClickable(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, url => {
+                return `<a href="${url}" target="_blank" rel="noopener" style="color:#1DB954;">${url}</a>`;
+            });
+        }
+
+        // === Обработка хэша ===
+        window.addEventListener('hashchange', () => {
+            const match = window.location.hash.match(/post=(\d+)/);
+            if (match) {
+                loadPost(match[1]);
+            } else {
+                document.getElementById('single-post').style.display = 'none';
+                document.getElementById('posts-list').style.display = 'block';
+                window.scrollTo({ top: 0 });
+            }
+        });
+
+        // Инициализация
+        if (window.location.hash.startsWith('#post=')) {
+            window.dispatchEvent(new Event('hashchange'));
+        }
+    </script>
+
+    <script>
+    // === Загрузка конфига из config_translator.php ===
+    let tmhConfig = null;
+
+    fetch('../core/config_translator.php')
+        .then(r => r.json())
+        .then(data => {
+            tmhConfig = data;
+            
+            // Устанавливаем тему
+            if (data.theme) {
+                document.documentElement.style.setProperty('--accent', data.theme.accent_color);
+                document.documentElement.style.setProperty('--bg', data.theme.background_color);
+                document.documentElement.style.setProperty('--text', data.theme.text_color);
+                document.documentElement.style.setProperty('--border', data.theme.border_color);
+            }
+
+            // Обновляем заголовок
+            if (data.meta?.blog_title) {
+                document.title = data.meta.blog_title + ' | ' + document.title.split(' | ')[1];
+            }
+
+            // Готов к использованию
+            console.log('✅ TMH Config loaded:', tmhConfig);
+            
+            // Можно запускать renderPosts(), initPlayer() и т.д.
+        })
+        .catch(err => {
+            console.error('❌ Ошибка загрузки конфига:', err);
+            tmhConfig = {
+                meta: { channel_username: 'streetepic' },
+                theme: { accent_color: '#1DB954' }
+            };
+        });
+    </script>
+</body>
+</html>
